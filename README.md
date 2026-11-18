@@ -31,8 +31,7 @@
 
 ## Struktur Project
 
----
-
+```
 patungan-app/
 ├── docs/
 │   └── dashboard-patungan.png
@@ -48,21 +47,23 @@ patungan-app/
 ├── .env                            # Konfigurasi Environment Server
 ├── package.json                    # Daftar dependensi & skrip Node.js
 └── server.js                       # Konfigurasi Backend Express & API SQLite
+```
 
----
-
-## Cara Menjalankan Project http://localhost:3000
+## Menjalankan Project http://localhost:3000
 
 1. Pastikan **Node.js versi 22.5+** sudah terpasang (`node -v`).
 
 2. **Pastikan file .env sudah ada**
+   ```bash
    PORT=3000
    SESSION_SECRET=kunci-rahasia-patungan
+   ```
 
 3. **Instal Dependensi:**
    ```bash
    npm install
    ```
+   
 4. **Jalankan server:**
    ```bash
    npm run dev
