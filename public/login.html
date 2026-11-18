@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk - Patungan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .animate-spin-custom {
+        animation: spin 0.8s linear infinite;
+      }
+    </style>
+    <script>
+      (function () {
+        const savedTheme = localStorage.getItem('patungan-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body
+    class="bg-[#F6F7FB] dark:bg-slate-950 text-[#17193B] dark:text-slate-100 min-h-screen flex items-center justify-center p-4 sm:p-6 transition-colors duration-200"
+  >
+    <div
+      id="page-loader"
+      class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-50 hidden flex flex-col items-center justify-center gap-3"
+    >
+      <div class="w-12 h-12 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin-custom"></div>
+      <p class="text-xs font-bold text-white tracking-wide">Memuat...</p>
+    </div>
+
+    <div
+      class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-sm border border-slate-100 dark:border-slate-800 transition-colors"
+    >
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center font-bold text-lg shadow-xs">
+            <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
+          </div>
+          <span class="text-xl font-extrabold tracking-tight text-[#17193B] dark:text-white">Patungan</span>
+        </div>
+
+        <button
+          type="button"
+          onclick="toggleTheme()"
+          title="Ganti Tema Terang/Gelap"
+          class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition"
+        >
+          <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="auth-tabs" class="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6">
+        <button
+          id="tab-login"
+          onclick="switchTab('login')"
+          class="flex-1 py-2.5 text-xs sm:text-sm font-semibold rounded-lg bg-white dark:bg-slate-900 text-[#17193B] dark:text-white shadow-sm transition"
+        >
+          Masuk
+        </button>
+        <button
+          id="tab-register"
+          onclick="switchTab('register')"
+          class="flex-1 py-2.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-500 dark:text-slate-400 hover:text-[#17193B] dark:hover:text-white transition"
+        >
+          Daftar Baru
+        </button>
+      </div>
+
+      <div id="alert-box" class="hidden mb-4 p-3 rounded-xl text-xs font-medium border"></div>
+
+      <form id="form-login" onsubmit="handleAuth(event, 'login')" autocomplete="off" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Masukkan email kamu"
+            required
+            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+          >
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300">Password</label>
+            <button
+              type="button"
+              onclick="switchTab('forgot')"
+              class="text-xs font-semibold text-[#4F46E5] dark:text-indigo-400 hover:underline"
+            >
+              Lupa password?
+            </button>
+          </div>
+          <div class="relative">
+            <input
+              type="password"
+              id="login-password"
+              name="password"
+              placeholder="Masukkan password"
+              required
+              class="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+            >
+            <button
+              type="button"
+              onclick="togglePassword('login-password', this)"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            >
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="w-full py-3 rounded-xl bg-[#17193B] dark:bg-[#4F46E5] hover:bg-[#252859] dark:hover:bg-[#4338CA] text-white font-semibold text-sm transition shadow-sm"
+        >
+          Masuk ke Patungan
+        </button>
+      </form>
+
+      <form id="form-register" onsubmit="handleAuth(event, 'register')" autocomplete="off" class="hidden space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nama Panggilan</label>
+          <input
+            type="text"
+            name="name"
+            placeholder="Contoh: Dimas"
+            required
+            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="nama@email.com"
+            required
+            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Password (min. 6 karakter)</label>
+          <div class="relative">
+            <input
+              type="password"
+              id="reg-password"
+              name="password"
+              placeholder="Buat password"
+              minlength="6"
+              required
+              class="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+            >
+            <button
+              type="button"
+              onclick="togglePassword('reg-password', this)"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            >
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Ulangi Password</label>
+          <div class="relative">
+            <input
+              type="password"
+              id="reg-confirm-password"
+              name="confirmPassword"
+              placeholder="Ketik ulang password"
+              minlength="6"
+              required
+              class="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+            >
+            <button
+              type="button"
+              onclick="togglePassword('reg-confirm-password', this)"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            >
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="w-full py-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-sm transition shadow-sm"
+        >
+          Buat Akun & Mulai
+        </button>
+      </form>
+
+      <form id="form-forgot" onsubmit="handleForgot(event)" autocomplete="off" class="hidden space-y-4">
+        <div class="mb-2">
+          <h2 class="text-base font-extrabold text-[#17193B] dark:text-white">Reset Password</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Masukkan email terdaftar dan buat password baru kamu.</p>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email Terdaftar</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="nama@email.com"
+            required
+            class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+          >
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Password Baru (min. 6 karakter)</label>
+          <div class="relative">
+            <input
+              type="password"
+              id="forgot-password"
+              name="newPassword"
+              placeholder="Masukkan password baru"
+              minlength="6"
+              required
+              class="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+            >
+            <button
+              type="button"
+              onclick="togglePassword('forgot-password', this)"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            >
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Ulangi Password Baru</label>
+          <div class="relative">
+            <input
+              type="password"
+              id="forgot-confirm-password"
+              name="confirmNewPassword"
+              placeholder="Ketik ulang password baru"
+              minlength="6"
+              required
+              class="w-full px-4 py-3 pr-11 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+            >
+            <button
+              type="button"
+              onclick="togglePassword('forgot-confirm-password', this)"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+            >
+              <i data-lucide="eye" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="w-full py-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-semibold text-sm transition shadow-sm"
+        >
+          Simpan Password Baru
+        </button>
+        <button
+          type="button"
+          onclick="switchTab('login')"
+          class="w-full py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-[#17193B] dark:hover:text-white"
+        >
+          ← Kembali ke halaman Masuk
+        </button>
+      </form>
+    </div>
+
+    <script>
+      function showLoader() {
+        document.getElementById('page-loader').classList.remove('hidden');
+        document.getElementById('page-loader').classList.add('flex');
+      }
+      function hideLoader() {
+        document.getElementById('page-loader').classList.add('hidden');
+        document.getElementById('page-loader').classList.remove('flex');
+      }
+
+      function updateThemeIcon() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const iconEl = document.getElementById('theme-icon');
+        if (iconEl) {
+          iconEl.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+          lucide.createIcons();
+        }
+      }
+
+      function toggleTheme() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('patungan-theme', isDark ? 'dark' : 'light');
+        updateThemeIcon();
+      }
+
+      updateThemeIcon();
+
+      function showAlert(msg, isSuccess = false) {
+        const box = document.getElementById('alert-box');
+        box.textContent = msg;
+        box.className = isSuccess
+          ? 'mb-4 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-medium border border-emerald-200 dark:border-emerald-800'
+          : 'mb-4 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-300 text-xs font-medium border border-rose-100 dark:border-rose-800';
+        box.classList.remove('hidden');
+      }
+
+      function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        btn.innerHTML = isHidden ? '<i data-lucide="eye-off" class="w-4 h-4"></i>' : '<i data-lucide="eye" class="w-4 h-4"></i>';
+        lucide.createIcons();
+      }
+
+      function switchTab(mode) {
+        showLoader();
+        setTimeout(() => {
+          document.getElementById('alert-box').classList.add('hidden');
+          const authTabs = document.getElementById('auth-tabs');
+          const formLogin = document.getElementById('form-login');
+          const formRegister = document.getElementById('form-register');
+          const formForgot = document.getElementById('form-forgot');
+
+          formLogin.classList.add('hidden');
+          formRegister.classList.add('hidden');
+          formForgot.classList.add('hidden');
+
+          const activeClass =
+            'flex-1 py-2.5 text-xs sm:text-sm font-semibold rounded-lg bg-white dark:bg-slate-900 text-[#17193B] dark:text-white shadow-sm transition';
+          const inactiveClass =
+            'flex-1 py-2.5 text-xs sm:text-sm font-semibold rounded-lg text-slate-500 dark:text-slate-400 hover:text-[#17193B] dark:hover:text-white transition';
+
+          if (mode === 'login') {
+            authTabs.classList.remove('hidden');
+            formLogin.classList.remove('hidden');
+            document.getElementById('tab-login').className = activeClass;
+            document.getElementById('tab-register').className = inactiveClass;
+          } else if (mode === 'register') {
+            authTabs.classList.remove('hidden');
+            formRegister.classList.remove('hidden');
+            document.getElementById('tab-register').className = activeClass;
+            document.getElementById('tab-login').className = inactiveClass;
+          } else if (mode === 'forgot') {
+            authTabs.classList.add('hidden');
+            formForgot.classList.remove('hidden');
+          }
+          hideLoader();
+        }, 300);
+      }
+
+      async function handleAuth(e, type) {
+        e.preventDefault();
+        showLoader();
+        const formData = new FormData(e.target);
+        const payload = Object.fromEntries(formData.entries());
+
+        if (type === 'register' && payload.password !== payload.confirmPassword) {
+          hideLoader();
+          showAlert('Konfirmasi password tidak cocok!');
+          return;
+        }
+
+        try {
+          const res = await fetch(`/api/${type}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+
+          if (!res.ok) {
+            hideLoader();
+            showAlert(data.error || 'Terjadi kesalahan');
+          } else {
+            window.location.href = '/';
+          }
+        } catch (err) {
+          hideLoader();
+          showAlert('Terjadi kesalahan koneksi.');
+        }
+      }
+
+      async function handleForgot(e) {
+        e.preventDefault();
+        showLoader();
+        const formData = new FormData(e.target);
+        const payload = Object.fromEntries(formData.entries());
+
+        if (payload.newPassword !== payload.confirmNewPassword) {
+          hideLoader();
+          showAlert('Konfirmasi password baru tidak cocok!');
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+
+          hideLoader();
+          if (!res.ok) {
+            showAlert(data.error || 'Gagal mereset password');
+          } else {
+            e.target.reset();
+            switchTab('login');
+            showAlert(data.message, true);
+          }
+        } catch (err) {
+          hideLoader();
+          showAlert('Terjadi kesalahan koneksi.');
+        }
+      }
+    </script>
+  </body>
+</html>

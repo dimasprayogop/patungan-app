@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patungan - Bagi Tagihan Tanpa Pusing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class'
+      };
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .animate-spin-custom {
+        animation: spin 0.8s linear infinite;
+      }
+    </style>
+
+    <script>
+      (function () {
+        const savedTheme = localStorage.getItem('patungan-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+  </head>
+
+  <body class="bg-[#F6F7FB] dark:bg-slate-950 text-[#17193B] dark:text-slate-100 min-h-screen pb-16 transition-colors duration-200">
+    <div
+      id="page-loader"
+      class="fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-50 hidden flex flex-col items-center justify-center gap-3"
+    >
+      <div class="w-12 h-12 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin-custom"></div>
+      <p class="text-xs font-bold text-white tracking-wide">Memuat data...</p>
+    </div>
+
+    <header class="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-3 sm:py-5">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-4 lg:gap-6 min-w-0">
+          <div class="flex items-center gap-2.5 shrink-0">
+            <div class="w-9 h-9 rounded-xl bg-[#4F46E5] text-white flex items-center justify-center shadow-sm">
+              <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+            </div>
+            <span class="text-lg font-extrabold tracking-tight text-[#17193B] dark:text-white">Patungan</span>
+          </div>
+
+          <div class="hidden md:flex items-center gap-2 flex-wrap">
+            <div id="group-tabs-desktop" class="flex items-center gap-2 flex-wrap"></div>
+            <button
+              onclick="openGroupModal()"
+              title="Buat Grup Baru"
+              class="px-3.5 py-2 rounded-full border border-dashed border-slate-300 dark:border-slate-700 hover:border-[#17193B] dark:hover:border-indigo-400
+              text-slate-600 dark:text-slate-300 text-xs font-bold flex items-center gap-1.5 transition bg-white dark:bg-slate-900"
+            >
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i> Grup Baru
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+          <button
+            onclick="toggleTheme()"
+            title="Ganti Mode Terang / Gelap"
+            class="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 text-slate-600 dark:text-slate-300
+            hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition shadow-2xs"
+          >
+            <i id="theme-icon" data-lucide="moon" class="w-4 h-4"></i>
+          </button>
+
+          <div
+            class="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 px-2.5 py-1.5 rounded-full"
+          >
+            <div
+              id="user-avatar"
+              class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#DCE1F9] dark:bg-indigo-900/70 text-[#17193B] dark:text-indigo-200 font-bold text-xs
+              flex items-center justify-center"
+            >
+              U
+            </div>
+            <span
+              id="user-name"
+              class="text-xs sm:text-sm font-semibold text-[#17193B] dark:text-slate-200 max-w-[80px] sm:max-w-none truncate"
+              >User</span
+            >
+          </div>
+
+          <button
+            onclick="logout()"
+            title="Keluar"
+            class="px-2.5 py-2 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400
+            hover:bg-rose-50 dark:hover:bg-rose-950/40 transition flex items-center gap-1"
+          >
+            <i data-lucide="log-out" class="w-3.5 h-3.5 sm:hidden"></i>
+            <span class="hidden sm:inline">Keluar</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex md:hidden items-center gap-2 overflow-x-auto no-scrollbar pt-3 pb-1">
+        <div id="group-tabs-mobile" class="flex items-center gap-2 shrink-0"></div>
+        <button
+          onclick="openGroupModal()"
+          class="shrink-0 px-3.5 py-2 rounded-full border border-dashed border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300
+          text-xs font-bold flex items-center gap-1 bg-white dark:bg-slate-900"
+        >
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i> Grup Baru
+        </button>
+      </div>
+    </header>
+
+    <section id="empty-state" class="hidden max-w-xl mx-auto px-4 sm:px-6 mt-10 sm:mt-16 text-center">
+      <div
+        class="bg-white dark:bg-slate-900 rounded-[28px] sm:rounded-[32px] p-8 sm:p-10 shadow-sm border border-slate-100 dark:border-slate-800 space-y-5"
+      >
+        <div
+          class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/80 text-[#4F46E5] dark:text-indigo-400 flex items-center justify-center mx-auto"
+        >
+          <i data-lucide="wallet" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <h2 class="text-lg sm:text-xl font-extrabold text-[#17193B] dark:text-white">Belum ada grup patungan</h2>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+            Mulai catat pengeluaran liburan, kos bulanan, atau makan bareng teman dengan membuat grup patungan pertamamu.
+          </p>
+        </div>
+        <button
+          onclick="openGroupModal()"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#191B42] dark:bg-[#4F46E5] hover:bg-[#252859] dark:hover:bg-[#4338CA]
+          text-white font-bold text-sm px-6 py-3.5 rounded-2xl transition shadow-md"
+        >
+          <i data-lucide="plus" class="w-4 h-4"></i> Buat Grup Pertama
+        </button>
+      </div>
+    </section>
+
+    <main id="dashboard-content" class="hidden max-w-6xl mx-auto px-4 sm:px-6 space-y-5 sm:space-y-6 mt-1 sm:mt-2">
+      <section
+        class="bg-[#191B42] dark:bg-gradient-to-br dark:from-[#191B42] dark:to-[#111330] text-white rounded-[24px] sm:rounded-[28px] p-5 sm:p-7 md:p-9
+        shadow-lg border border-transparent dark:border-indigo-900/40 flex flex-col lg:flex-row justify-between gap-6 lg:gap-8"
+      >
+        <div class="space-y-4 sm:space-y-5 flex-1">
+          <div>
+            <div class="flex items-center gap-2.5 mb-1.5 flex-wrap">
+              <p id="hero-date" class="text-[11px] font-bold tracking-widest uppercase text-indigo-300/80">NAMA GRUP • TANGGAL</p>
+              <div class="flex items-center gap-1">
+                <button
+                  onclick="openEditGroupModal()"
+                  title="Edit Nama & Waktu Grup"
+                  class="text-indigo-300/70 hover:text-white p-1 rounded-lg hover:bg-white/10 transition"
+                >
+                  <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                </button>
+                <button
+                  onclick="deleteCurrentGroup()"
+                  title="Hapus Grup Ini"
+                  class="text-rose-300/70 hover:text-rose-300 p-1 rounded-lg hover:bg-white/10 transition"
+                >
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+            <h1 id="hero-total" class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight break-words">Rp0</h1>
+            <p id="hero-subtitle" class="text-xs sm:text-sm text-indigo-200/80 mt-2 leading-relaxed">
+              Total pengeluaran dari 0 transaksi, rata-rata Rp0 per orang.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3 flex-wrap">
+            <div id="hero-avatars" class="flex items-center -space-x-1.5"></div>
+            <span id="hero-member-names" class="text-xs font-medium text-indigo-200"></span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3 pt-1">
+            <button
+              onclick="openExpenseModal()"
+              class="w-full sm:w-auto justify-center bg-white hover:bg-indigo-50 text-[#191B42] font-bold text-xs px-5 py-3 rounded-xl transition flex items-center gap-2 shadow-sm"
+            >
+              <i data-lucide="plus" class="w-4 h-4"></i> Tambah pengeluaran
+            </button>
+            <button
+              onclick="openMemberModal()"
+              class="w-full sm:w-auto justify-center bg-transparent hover:bg-white/10 text-white border border-white/25 font-semibold text-xs px-5 py-3 rounded-xl transition flex items-center gap-2"
+            >
+              <i data-lucide="users" class="w-3.5 h-3.5"></i> Kelola anggota
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="bg-[#232659] dark:bg-slate-900/70 rounded-2xl p-5 sm:p-6 lg:w-80 flex flex-col justify-center border border-white/5 dark:border-indigo-500/20"
+        >
+          <p class="text-[11px] font-bold uppercase tracking-wider text-indigo-300 mb-1.5 sm:mb-2">
+            POSISI <span id="my-account-label">-</span>
+          </p>
+          <p id="my-position-amount" class="text-2xl sm:text-3xl font-extrabold text-[#4DD4D0] tracking-tight">Rp0</p>
+          <p id="my-position-desc" class="text-xs text-indigo-200/80 mt-1.5 sm:mt-2 leading-relaxed">
+            Saldo <span id="my-account-label">-</span> dalam keadaan seimbang.
+          </p>
+        </div>
+      </section>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+        <section
+          class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-[24px] p-5 sm:p-6 md:p-7 shadow-sm border border-slate-100 dark:border-slate-800 transition-colors"
+        >
+          <div class="flex items-center justify-between mb-4 sm:mb-5">
+            <h2 class="text-base font-extrabold text-[#17193B] dark:text-white">Pengeluaran</h2>
+            <span id="expense-count" class="text-xs font-medium text-slate-400">0 transaksi</span>
+          </div>
+          <div id="expense-list" class="space-y-3"></div>
+        </section>
+
+        <div class="lg:col-span-5 space-y-5 sm:space-y-6">
+          <section
+            class="bg-white dark:bg-slate-900 rounded-[24px] p-5 sm:p-6 md:p-7 shadow-sm border border-slate-100 dark:border-slate-800 transition-colors"
+          >
+            <div class="mb-4 sm:mb-5">
+              <h2 class="text-base font-extrabold text-[#17193B] dark:text-white">Saldo</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Kanan: ditalangi. Kiri: berutang.</p>
+            </div>
+            <div id="balance-bars" class="space-y-4"></div>
+          </section>
+
+          <section
+            class="bg-white dark:bg-slate-900 rounded-[24px] p-5 sm:p-6 md:p-7 shadow-sm border border-slate-100 dark:border-slate-800 transition-colors"
+          >
+            <div class="mb-4">
+              <h2 class="text-base font-extrabold text-[#17193B] dark:text-white">Cara melunasi</h2>
+              <p id="settle-subtitle" class="text-xs text-slate-400 mt-0.5">Belum ada tagihan.</p>
+            </div>
+            <div id="settle-list" class="space-y-3"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <div
+      id="modal-expense"
+      class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50"
+    >
+      <div
+        class="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-md w-full p-6 shadow-xl border-t sm:border border-slate-100 dark:border-slate-800 max-h-[90vh] overflow-y-auto"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h3 id="modal-expense-title" class="text-lg font-extrabold text-[#17193B] dark:text-white">Tambah Pengeluaran</h3>
+          <button onclick="closeModal('modal-expense')" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <form onsubmit="submitExpense(event)" class="space-y-4">
+          <input type="hidden" id="exp-id" value="">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Keperluan / Judul</label>
+            <input
+              type="text"
+              id="exp-title"
+              placeholder="Contoh: Makan siang, Bensin, Villa"
+              required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+            >
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nominal (Rp)</label>
+              <input
+                type="text"
+                id="exp-amount"
+                inputmode="numeric"
+                oninput="formatInputRibuan(this)"
+                placeholder="150.000"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold focus:outline-none focus:border-[#4F46E5]"
+              >
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Kategori Ikon</label>
+              <select
+                id="exp-category"
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+              >
+                <option value="home">🏠 Penginapan / Villa</option>
+                <option value="utensils">🍴 Makan & Minum</option>
+                <option value="bike">🛵 Transportasi / Motor</option>
+                <option value="receipt">🧾 Belanja / Lainnya</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Dibayar oleh</label>
+              <select
+                id="exp-paid-by"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+              ></select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Tanggal</label>
+              <input
+                type="date"
+                id="exp-date"
+                required
+                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+              >
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Dibagi rata untuk siapa saja?</label>
+            <div id="exp-split-members" class="flex flex-wrap gap-2"></div>
+          </div>
+          <button type="submit" class="w-full py-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-sm transition">
+            Simpan Pengeluaran
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div
+      id="modal-member"
+      class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50"
+    >
+      <div
+        class="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-md w-full p-6 shadow-xl border-t sm:border border-slate-100 dark:border-slate-800"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-extrabold text-[#17193B] dark:text-white">Kelola Anggota Grup</h3>
+          <button onclick="closeModal('modal-member')" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <form onsubmit="submitMember(event)" class="flex gap-2 mb-5">
+          <input
+            type="text"
+            id="member-name"
+            placeholder="Nama anggota baru..."
+            required
+            class="flex-1 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+          >
+          <button
+            type="submit"
+            class="px-4 py-2.5 rounded-xl bg-[#191B42] dark:bg-[#4F46E5] hover:bg-[#252859] dark:hover:bg-[#4338CA] text-white font-bold text-xs transition shrink-0"
+          >
+            + Tambah
+          </button>
+        </form>
+
+        <div class="space-y-2 max-h-64 overflow-y-auto pr-1" id="member-manage-list"></div>
+      </div>
+    </div>
+
+    <div
+      id="modal-group"
+      class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4 z-50"
+    >
+      <div
+        class="bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-3xl max-w-sm w-full p-6 shadow-xl border-t sm:border border-slate-100 dark:border-slate-800"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h3 id="modal-group-title" class="text-lg font-extrabold text-[#17193B] dark:text-white">Buat Grup Patungan Baru</h3>
+          <button onclick="closeModal('modal-group')" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <form onsubmit="submitGroup(event)" class="space-y-4">
+          <input type="hidden" id="group-edit-id" value="">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Nama Acara / Grup</label>
+            <input
+              type="text"
+              id="group-title"
+              placeholder="Contoh: Liburan Bali"
+              required
+              class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:border-[#4F46E5]"
+            >
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Tanggal Berangkat</label>
+              <input
+                type="date"
+                id="group-start-date"
+                required
+                class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-[#4F46E5]"
+              >
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Tanggal Pulang</label>
+              <input
+                type="date"
+                id="group-end-date"
+                required
+                class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:border-[#4F46E5]"
+              >
+            </div>
+          </div>
+          <button type="submit" class="w-full py-3 rounded-xl bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold text-sm transition">
+            Simpan Grup
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

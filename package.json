@@ -1,0 +1,18 @@
+{
+  "name": "patungan-app",
+  "version": "4.0.0",
+  "description": "Aplikasi Patungan v4 (Loading State, Akun Aktif Posisi Kamu, GMT+7, Hash Password Bcrypt, Resethid/Sequential ID, Dark/Light Mode + Mobile Responsive)",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "zod": "^3.23.8"
+  }
+}
