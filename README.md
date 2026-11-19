@@ -1,7 +1,8 @@
 # Patungan - Aplikasi Bagi Tagihan & Pengeluaran Bersama
 
 <p align="center">
-  <img src="docs/dashboard-patungan.png" width="80%">
+  <img src="docs/dashboard-patungan.png" width="80%"><br>
+  <a href="https://patungan.up.railway.app" target="_blank">Demo Aplikasi Patungan</a>
 </p>
 
 **Patungan** adalah aplikasi web yang dirancang untuk memudahkan pencatatan, perhitungan, dan pelunasan pengeluaran bersama (seperti liburan, acara kantor, kos bulanan, atau makan bareng) secara transparan dan adil. Dilengkapi dengan sistem manajemen akun aman, pembagian rata otomatis, algoritma penyederhanaan utang, serta tampilan responsif dengan tema Terang/Gelap.
@@ -63,7 +64,7 @@ patungan-app/
    ```bash
    npm install
    ```
-   
+
 4. **Jalankan server:**
    ```bash
    npm run dev
